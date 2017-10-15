@@ -77,6 +77,10 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val s4 = singletonSet(3)
+    val s5 = singletonSet(5)
+    val s7 = singletonSet(7)
+    val s8 = singletonSet(8)
   }
 
   /**
@@ -107,6 +111,63 @@ class FunSetSuite extends FunSuite {
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
+    }
+  }
+
+  test("intersection contains common elements of 2 sets") {
+    new TestSets {
+      val s = intersect(s3, s4)
+      assert(contains(s, 3), "Union 3")
+      assert(contains(s, 3), "Union 4")
+    }
+  }
+
+  test("difference contains the difference of the two given sets") {
+    new TestSets {
+      val s = diff(s1, s2)
+      val f = diff(s3, s4)
+      assert(contains(s, 2), "Union 1")
+      assert(contains(s, 1), "Union 2")
+      assert(!contains(f, 3), "Union 3")
+    }
+  }
+
+  test("filter contains the elements respect the given rule") {
+    new TestSets {
+      val s = filter(x=>x<6, s5)
+      val f = filter(x=>x>6, s7)
+      val z = filter(x=>x==8, s7)
+      assert(contains(s, 5))
+      assert(contains(f, 7))
+      assert(!contains(z, 8))
+    }
+  }
+
+  test("forall contains the elements respect the rule and exists in the set") {
+    new TestSets {
+      val s = forall(x => x > -1000 && x < -997, y => y > -1000 && y < -997)
+      val f = forall(x => x > -1000 && x < -997, y => y > -1000 && y < -998)
+      assert(s)
+      assert(!f)
+    }
+  }
+
+  test("Exits contains an elements of one set exists in the other set") {
+    new TestSets {
+      val s = exists(x => x > -1000 && x < -997, y => y > -1000 && y < -997)
+      val f = exists(x => x > -900 && x < -800, y => y > -1000 && y < -997)
+      assert(s)
+      assert(!f)
+    }
+  }
+
+  test("Map") {
+    new TestSets {
+      val setTransformed = map(x => x > 0 && x < 5, y => y*2)
+      assert(contains(setTransformed, 2))
+      assert(contains(setTransformed, 8))
+      assert(!contains(setTransformed, 9))
+      assert(!contains(setTransformed, 10))
     }
   }
 
