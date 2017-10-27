@@ -119,7 +119,7 @@ class Empty extends TweetSet {
 
   def mostRetwetedTweet(tweetA: Tweet, tweetB: Tweet): Tweet = null
 
-  def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList = new Cons(null, null)
 
   /**
    * The following methods are already implemented
@@ -186,7 +186,13 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   }
 
 
-  override def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList = {
+
+    val most = mostRetweeted
+    val newSet = remove(most)
+
+    new Cons(most, newSet.descendingByRetweet)
+  }
 
   /**
    * The following methods are already implemented
