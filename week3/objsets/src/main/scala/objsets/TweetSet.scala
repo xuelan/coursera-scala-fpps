@@ -179,9 +179,9 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def mostRetwetedTweet(tweetA: Tweet, tweetB: Tweet): Tweet = {
     if(tweetA.retweets >= tweetB.retweets){
-        tweetA
+      tweetA
     } else {
-        tweetB
+      tweetB
     }
   }
 
@@ -257,7 +257,13 @@ object GoogleVsApple {
     val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
     val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-    lazy val googleTweets: TweetSet = ???
+    lazy val googleTweets: TweetSet = {
+      val allTweetsSets =  TweetReader.allTweets
+
+      val googleTweetsSet:TweetSet = new Empty
+      null
+    }
+
     lazy val appleTweets: TweetSet = ???
 
     /**
