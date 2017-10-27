@@ -65,7 +65,7 @@ abstract class TweetSet {
    */
     def mostRetweeted(): Tweet
 
-    def maxTweet(max: Tweet): Tweet
+    def mostRetwetedTweet(tweetA: Tweet, tweetB: Tweet): Tweet
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
    * in descending order. In other words, the head of the resulting list should
@@ -117,7 +117,7 @@ class Empty extends TweetSet {
 
   def mostRetweeted(): Tweet = null
 
-  def maxTweet(max: Tweet): Tweet = null
+  def mostRetwetedTweet(tweetA: Tweet, tweetB: Tweet): Tweet = null
 
   def descendingByRetweet: TweetList = ???
 
@@ -166,20 +166,22 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
 
   def mostRetweeted(): Tweet = {
 
-    var max: Tweet = new Tweet("", "", Int.MinValue)
-
-    max = if(max.retweets < elem.retweets) elem else max
-
-    maxTweet(max)
+    if(left.isEmpty && right.isEmpty){
+      elem
+    } else if(left.isEmpty && !right.isEmpty){
+      mostRetwetedTweet(elem, right.mostRetweeted)
+    } else if(!left.isEmpty && right.isEmpty){
+      mostRetwetedTweet(elem, left.mostRetweeted)
+    } else {
+      mostRetwetedTweet(elem, mostRetwetedTweet(left.mostRetweeted, right.mostRetweeted))
+    }
   }
 
-  def maxTweet(max: Tweet): Tweet = {
-    if(left.isEmpty && right.isEmpty){
-      max
-    } else if(left.isEmpty){
-      right.maxTweet(max)
+  def mostRetwetedTweet(tweetA: Tweet, tweetB: Tweet): Tweet = {
+    if(tweetA.retweets >= tweetB.retweets){
+        tweetA
     } else {
-      left.maxTweet(max)
+        tweetB
     }
   }
 
