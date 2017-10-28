@@ -75,7 +75,17 @@ abstract class TweetSet {
    * Question: Should we implment this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def descendingByRetweet: TweetList
+    def descendingByRetweet: TweetList = {
+
+      val most = mostRetweeted
+      val newSet = remove(most)
+
+      if(newSet.isEmpty())
+        new Cons(most, Nil)
+      else
+      new Cons(most, newSet.descendingByRetweet)
+
+    }
 
   /**
    * The following methods are already implemented
@@ -115,11 +125,9 @@ class Empty extends TweetSet {
     that
   }
 
-  def mostRetweeted(): Tweet = null
+  def mostRetweeted(): Tweet = throw new java.util.NoSuchElementException("EmptyTweetSet")
 
-  def mostRetwetedTweet(tweetA: Tweet, tweetB: Tweet): Tweet = null
-
-  def descendingByRetweet: TweetList = new Cons(null, null)
+  def mostRetwetedTweet(tweetA: Tweet, tweetB: Tweet): Tweet = throw new java.util.NoSuchElementException("EmptyTweetSet")
 
   /**
    * The following methods are already implemented
@@ -146,6 +154,7 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     }
   }
 
+  //TODO To optimize this method and get rid of var
   def union(that: TweetSet): TweetSet = {
 
     val thatSet: Set[Tweet] = asSet(that)
@@ -183,15 +192,6 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     } else {
       tweetB
     }
-  }
-
-
-  def descendingByRetweet: TweetList = {
-
-    val most = mostRetweeted
-    val newSet = remove(most)
-
-    new Cons(most, newSet.descendingByRetweet)
   }
 
   /**
@@ -253,26 +253,59 @@ class Cons(val head: Tweet, val tail: TweetList) extends TweetList {
 }
 
 
+//TODO Get rid of var, local mutable variable
 object GoogleVsApple {
-    val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
-    val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-    lazy val googleTweets: TweetSet = {
-      val allTweetsSets =  TweetReader.allTweets
+  val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
+  val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-      val googleTweetsSet:TweetSet = new Empty
-      null
-    }
+  val allTweetsSets = TweetReader.allTweets
 
-    lazy val appleTweets: TweetSet = ???
+  lazy val googleTweets: TweetSet = {
 
-    /**
-     * A list of all tweets mentioning a keyword from either apple or google,
-     * sorted by the number of retweets.
-     */
-    lazy val trending: TweetList = ???
+    var googleTweetsSet: TweetSet = new Empty
+
+    allTweetsSets.foreach(
+      x => {
+        google.map(
+          y => {
+            if (x.text.contains(y)) {
+              googleTweetsSet = googleTweetsSet.incl(x)
+            }
+          }
+        )
+      }
+    )
+    googleTweetsSet
   }
 
+  lazy val appleTweets: TweetSet = {
+
+    var appleTweetsSet: TweetSet = new Empty
+
+    allTweetsSets.foreach(
+      x => {
+        google.map(
+          y => {
+            if (x.text.contains(y)) {
+              appleTweetsSet = appleTweetsSet.incl(x)
+            }
+          }
+        )
+      }
+    )
+    appleTweetsSet
+  }
+
+  /**
+    * A list of all tweets mentioning a keyword from either apple or google,
+    * sorted by the number of retweets.
+    */
+  lazy val trending: TweetList = {
+    val commonTweetSet = appleTweets.union(googleTweets)
+    commonTweetSet.descendingByRetweet
+  }
+}
 object Main extends App {
   // Print the trending tweets
   GoogleVsApple.trending foreach println
