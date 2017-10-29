@@ -1,6 +1,7 @@
 package exercise
 
 //Peano numbers
+//Objects are everywhere, even nature number, primitive objects...
 abstract class Nat {
   def isZero: Boolean
   def predecessor: Nat
