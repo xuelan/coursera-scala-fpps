@@ -9,9 +9,31 @@ object test extends App {
 
   def squareListWithMap(xs: List[Int]): List[Int] = xs map (x => x*x)
 
-  val list = List(2,5,7)
+  val list = List(2,5,7,9)
 
-  squareListWithPatternMatch(list).foreach(x => println("Pattern Match: " + x))
+  println(squareListWithPatternMatch(list))
 
-  squareListWithMap(list).foreach(x => println("Map: " + x))
+  println("Map: ")
+  println(squareListWithMap(list))
+
+  val listFiltered = list filter (x => x > 2)
+
+  println("Filter: ")
+  println(listFiltered)
+
+  val pairePartitioned = list partition (x => x > 4)
+
+  println("Partition 1: ")
+  println(pairePartitioned)
+  println("Partition 2: ")
+  println(pairePartitioned)
+
+  val listTakeWhile = list takeWhile (x => x < 6)
+  println("Take while: ")
+  println(listTakeWhile)
+
+  val listDropWhile = list dropWhile (x => x <6)
+  println("Drop while: ")
+  println(listDropWhile)
+
 }
