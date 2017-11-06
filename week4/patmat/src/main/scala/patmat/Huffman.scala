@@ -1,7 +1,7 @@
 package patmat
 
 
-import scala.collection.mutable.Map
+import scala.collection.mutable.{ListBuffer, Map}
 
 /**
  * Assignment 4: Huffman coding
@@ -177,8 +177,25 @@ object Huffman {
   /**
    * This function decodes the bit sequence `bits` using the code tree `tree` and returns
    * the resulting list of characters.
+   * TODO Very good one
    */
-    def decode(tree: CodeTree, bits: List[Bit]): List[Char] = ???
+    def decode(tree: CodeTree, bits: List[Bit]): List[Char] = {
+
+      def recursive(treeCurrent: CodeTree, remainBits: List[Bit], listChars: List[Char]): List[Char] =
+        treeCurrent match {
+          case Leaf(char, _) if remainBits.isEmpty => listChars :+ char
+          case Leaf(char, _) => recursive(tree, remainBits, listChars :+ char)
+          case Fork(left, right, _, _) => {
+              remainBits match {
+              case 0 :: others => recursive(left, others, listChars)
+              case 1 :: others => recursive(right, others, listChars)
+            }
+          }
+        }
+
+
+      recursive(tree, bits, List())
+    }
   
   /**
    * A Huffman coding tree for the French language.
