@@ -62,5 +62,11 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("codeBits") {
+    new TestTrees {
+      val table = List(('a',List(1,0,1,0)),('b',List(1,1)),('c',List(1,0)))
+      assert(codeBits(table)('c') === List(1,0))
+    }
+  }
 
 }

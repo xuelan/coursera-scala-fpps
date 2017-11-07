@@ -186,13 +186,14 @@ object Huffman {
           case Leaf(char, _) if remainBits.isEmpty => listChars :+ char
           case Leaf(char, _) => recursive(tree, remainBits, listChars :+ char)
           case Fork(left, right, _, _) => {
+              if (remainBits.isEmpty)
+                listChars
               remainBits match {
               case 0 :: others => recursive(left, others, listChars)
               case 1 :: others => recursive(right, others, listChars)
             }
           }
         }
-
 
       recursive(tree, bits, List())
     }
@@ -213,7 +214,7 @@ object Huffman {
   /**
    * Write a function that returns the decoded secret
    */
-  def decodedSecret: List[Char] = ???
+  def decodedSecret: List[Char] = decode(frenchCode, secret)
   
 
   // Part 4a: Encoding using Huffman tree
@@ -222,7 +223,21 @@ object Huffman {
    * This function encodes `text` using the code tree `tree`
    * into a sequence of bits.
    */
-    def encode(tree: CodeTree)(text: List[Char]): List[Bit] = ???
+    def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
+
+      def encodeCharCurrent(treeCurrent: CodeTree, accumBits: List[Bit], charCurrent:Char): List[Bit] =
+        treeCurrent match {
+          case Leaf(char, _) => accumBits
+          case Fork(left, right, _, _) => {
+            if(chars(left).contains(charCurrent))
+              encodeCharCurrent(left, accumBits :+ 0, charCurrent)
+            else
+              encodeCharCurrent(left, accumBits :+ 1, charCurrent)
+          }
+        }
+
+      text.flatMap(x => encodeCharCurrent(tree, List(), x))
+    }
   
   // Part 4b: Encoding using code table
 
@@ -232,7 +247,9 @@ object Huffman {
    * This function returns the bit sequence that represents the character `char` in
    * the code table `table`.
    */
-    def codeBits(table: CodeTable)(char: Char): List[Bit] = ???
+    def codeBits(table: CodeTable)(char: Char): List[Bit] = {
+      table.toMap.get(char).get
+    }
   
   /**
    * Given a code tree, create a code table which contains, for every character in the
@@ -242,14 +259,21 @@ object Huffman {
    * a valid code tree that can be represented as a code table. Using the code tables of the
    * sub-trees, think of how to build the code table for the entire tree.
    */
-    def convert(tree: CodeTree): CodeTable = ???
+    def convert(tree: CodeTree): CodeTable = {
+
+      def recursive(currentTree: CodeTree, accumTable: List[(Char, List[Bit])]): List[(Char, List[Bit])] = currentTree match {
+        case Leaf(char, _) => accumTable :+ (char, encode(tree)(List(char)))
+        case Fork(left, right, _, _) => recursive(left, accumTable) ::: recursive(right, accumTable)
+      }
+      recursive(tree, List())
+    }
   
   /**
    * This function takes two code tables and merges them into one. Depending on how you
    * use it in the `convert` method above, this merge method might also do some transformations
    * on the two parameter code tables.
    */
-    def mergeCodeTables(a: CodeTable, b: CodeTable): CodeTable = ???
+    def mergeCodeTables(a: CodeTable, b: CodeTable): CodeTable = a:::b
   
   /**
    * This function encodes `text` according to the code tree `tree`.
