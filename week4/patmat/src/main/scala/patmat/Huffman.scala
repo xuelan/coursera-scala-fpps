@@ -164,7 +164,7 @@ object Huffman {
    */
     def createCodeTree(chars: List[Char]): CodeTree = {
       val times: List[(Char, Int)] = this.times(chars)
-      val leaves: List[Leaf] = makeOrderedLeafList(times)
+      val leaves: List[Leaf] = this.makeOrderedLeafList(times)
       val codeTree: CodeTree = until(singleton, combine)(leaves).head
       codeTree
     }
@@ -232,7 +232,7 @@ object Huffman {
             if(chars(left).contains(charCurrent))
               encodeCharCurrent(left, accumBits :+ 0, charCurrent)
             else
-              encodeCharCurrent(left, accumBits :+ 1, charCurrent)
+              encodeCharCurrent(right, accumBits :+ 1, charCurrent)
           }
         }
 
@@ -281,5 +281,8 @@ object Huffman {
    * To speed up the encoding process, it first converts the code tree to a code table
    * and then uses it to perform the actual encoding.
    */
-    def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = ???
+    def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = {
+      val codeTable = convert(tree)
+      text.flatMap(codeBits(codeTable))
+    }
   }

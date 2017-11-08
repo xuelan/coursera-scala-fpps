@@ -22,6 +22,7 @@ class HuffmanSuite extends FunSuite {
   }
 
 
+
   test("chars of a larger tree") {
     new TestTrees {
       assert(chars(t2) === List('a','b','d'))
@@ -56,9 +57,15 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("encode") {
+    new TestTrees {
+      assert(encode(t2)("abd".toList) == List(0,0,0,1,1))
+    }
+  }
+
   test("decode and encode a very short text should be identity") {
     new TestTrees {
-      assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
+      assert(decode(t2, encode(t2)("ab".toList)) === "ab".toList)
     }
   }
 
