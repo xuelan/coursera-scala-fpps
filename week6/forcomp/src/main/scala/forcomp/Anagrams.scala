@@ -87,7 +87,23 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+
+    def generator(x: List[List[(Char, Int)]]): List[List[(Char, Int)]] = x match {
+      case Nil    => List(Nil)
+      case h :: _ => h.flatMap(i => generator(x.tail).map(i :: _))
+    }
+
+    val setAllPossible: List[List[(Char, Int)]] = occurrences.map{
+        x => {
+          for(i <- 0 to x._2) yield (x._1, i)
+        }.toList
+      }
+
+    val combination = generator(setAllPossible)
+
+    combination.map(x => x.filter(_._2 != 0))
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    *
@@ -99,7 +115,7 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = x.filterNot(y.toSet)
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
